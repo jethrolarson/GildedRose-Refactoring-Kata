@@ -1,13 +1,16 @@
+export enum ItemType {
+    appreciating,
+    legendary,
+    event,
+    normal,
+    conjured,
+}
 export interface Item {
     name: string;
     sellIn: number;
     quality: number;
+    type: ItemType;
 }
-
-export const backstage_pass_name = 'Backstage passes to a TAFKAL80ETC concert';
-export const legendary_item_name = 'Sulfuras, Hand of Ragnaros';
-export const aged_brie_name = 'Aged Brie';
-export const conjured_item_prefix = 'Conjured ';
 
 const identity = <A>(a:A):A => a;
 
@@ -56,20 +59,22 @@ const updateBackstagePassItem = (item: Item): Item =>
         )(item)
     );
 
-const isConjured = (item: Item): boolean => item.name.startsWith(conjured_item_prefix);
-
-export const updateItem = (item: Item): Item => {
-    switch(item.name){
-        case legendary_item_name:
-            return updateLegendaryItem(item)
-        case aged_brie_name:
-            return updateAppreciatingItem(item)
-        case backstage_pass_name:
-            return updateBackstagePassItem(item)
-        default:
-            return isConjured(item) ? updateConjuredItem(item) : updateRegularItem(item)
+const getUpdater = (itemType: ItemType) => {
+    switch(itemType){
+        case ItemType.legendary:
+            return updateLegendaryItem
+        case ItemType.appreciating:
+            return updateAppreciatingItem
+        case ItemType.event:
+            return updateBackstagePassItem
+        case ItemType.conjured:
+            return updateConjuredItem
+        case ItemType.normal:
+            return updateRegularItem
     }
 }
+
+export const updateItem = (item: Item): Item => getUpdater(item.type)(item);
 
 // why test that .map works?
 export const updateQuality = (items: Item[]):Item[] => items.map(updateItem); 
