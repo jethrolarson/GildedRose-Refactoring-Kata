@@ -4,7 +4,8 @@
         "target": "es5",
         "strict": true,
         "noImplicitAny": false,
-        "sourceMap": false
+        "sourceMap": false,
+        "lib": ["ES2016"]
     },
     "exclude": [
         "node_modules"

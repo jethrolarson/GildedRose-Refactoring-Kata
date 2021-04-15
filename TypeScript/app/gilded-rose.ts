@@ -1,69 +1,76 @@
-export class Item {
+export interface Item {
     name: string;
     sellIn: number;
     quality: number;
+}
 
-    constructor(name, sellIn, quality) {
-        this.name = name;
-        this.sellIn = sellIn;
-        this.quality = quality;
+export const backstage_pass_name = 'Backstage passes to a TAFKAL80ETC concert';
+export const legendary_item_name = 'Sulfuras, Hand of Ragnaros';
+export const aged_brie_name = 'Aged Brie';
+export const conjured_item_prefix = 'Conjured ';
+
+const identity = <A>(a:A):A => a;
+
+const decrementSellIn = (item: Item): Item => ({...item, sellIn: item.sellIn - 1})
+
+// quality is never less than 0
+// quality is never greater than 50
+const changeQuality = (delta: number) => (item: Item): Item => ({
+    ...item,
+    quality: Math.max(Math.min(item.quality + delta, 50), 0)
+})
+
+const zeroQuality = (item: Item): Item => ({...item, quality: 0});
+
+export const updateRegularItem = (item: Item): Item => decrementSellIn(
+    (
+        item.quality === 0 ? identity :
+        item.sellIn <= 0 ? changeQuality(-2) :
+        changeQuality(-1)
+    )(item)
+)
+
+export const updateAppreciatingItem = (item: Item): Item => decrementSellIn(
+    (
+        item.sellIn > 0 ? changeQuality(1):
+        changeQuality(2)
+    )(item)
+)
+
+export const updateConjuredItem = (item: Item): Item => decrementSellIn(
+    (
+        item.quality === 0 ? identity :
+        item.sellIn <= 0 ? changeQuality(-4) :
+        changeQuality(-2)
+    )(item)
+)
+
+// legendary items are unchanging
+export const updateLegendaryItem = identity
+
+export const updateBackstagePassItem = (item: Item): Item =>
+    decrementSellIn(
+        (
+            item.sellIn > 10 ? changeQuality(1) :
+            item.sellIn > 5 ? changeQuality(2) :
+            item.sellIn > 0 ? changeQuality(3) :
+            zeroQuality
+        )(item)
+    );
+
+const isConjured = (item: Item): boolean => item.name.startsWith(conjured_item_prefix);
+
+export const updateItem = (item: Item): Item => {
+    switch(item.name){
+        case legendary_item_name:
+            return updateLegendaryItem(item)
+        case aged_brie_name:
+            return updateAppreciatingItem(item)
+        case backstage_pass_name:
+            return updateBackstagePassItem(item)
+        default:
+            return isConjured(item) ? updateConjuredItem(item) : updateRegularItem(item)
     }
 }
 
-export class GildedRose {
-    items: Array<Item>;
-
-    constructor(items = [] as Array<Item>) {
-        this.items = items;
-    }
-
-    updateQuality() {
-        for (let i = 0; i < this.items.length; i++) {
-            if (this.items[i].name != 'Aged Brie' && this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-                if (this.items[i].quality > 0) {
-                    if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                        this.items[i].quality = this.items[i].quality - 1
-                    }
-                }
-            } else {
-                if (this.items[i].quality < 50) {
-                    this.items[i].quality = this.items[i].quality + 1
-                    if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
-                        if (this.items[i].sellIn < 11) {
-                            if (this.items[i].quality < 50) {
-                                this.items[i].quality = this.items[i].quality + 1
-                            }
-                        }
-                        if (this.items[i].sellIn < 6) {
-                            if (this.items[i].quality < 50) {
-                                this.items[i].quality = this.items[i].quality + 1
-                            }
-                        }
-                    }
-                }
-            }
-            if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                this.items[i].sellIn = this.items[i].sellIn - 1;
-            }
-            if (this.items[i].sellIn < 0) {
-                if (this.items[i].name != 'Aged Brie') {
-                    if (this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-                        if (this.items[i].quality > 0) {
-                            if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                                this.items[i].quality = this.items[i].quality - 1
-                            }
-                        }
-                    } else {
-                        this.items[i].quality = this.items[i].quality - this.items[i].quality
-                    }
-                } else {
-                    if (this.items[i].quality < 50) {
-                        this.items[i].quality = this.items[i].quality + 1
-                    }
-                }
-            }
-        }
-
-        return this.items;
-    }
-}
+export const updateQuality = (items: Item[]):Item[] => items.map(updateItem); 
