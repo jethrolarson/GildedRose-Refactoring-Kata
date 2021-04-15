@@ -24,8 +24,7 @@ const zeroQuality = (item: Item): Item => ({...item, quality: 0});
 
 const updateRegularItem = (item: Item): Item => decrementSellIn(
     (
-        item.quality === 0 ? identity :
-        item.sellIn <= 0 ? changeQuality(-2) :
+        item.sellIn <= 0 ? zeroQuality :
         changeQuality(-1)
     )(item)
 )
@@ -39,8 +38,7 @@ const updateAppreciatingItem = (item: Item): Item => decrementSellIn(
 
 const updateConjuredItem = (item: Item): Item => decrementSellIn(
     (
-        item.quality === 0 ? identity :
-        item.sellIn <= 0 ? changeQuality(-4) :
+        item.sellIn <= 0 ? zeroQuality :
         changeQuality(-2)
     )(item)
 )
