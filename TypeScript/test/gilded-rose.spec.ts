@@ -1,16 +1,16 @@
 import { expect } from 'chai';
-import { aged_brie_name, backstage_pass_name, legendary_item_name, updateItem, updateRegularItem } from '../app/gilded-rose';
+import { aged_brie_name, backstage_pass_name, legendary_item_name, updateItem } from '../app/gilded-rose';
 
 describe('updateItem', () => {
     describe("regular items", () => {
         it('reduces quality and sellIn when sellIn is positive', () => {
-            expect(updateRegularItem({name: 'foo', quality: 2, sellIn: 2})).to.deep.equal({name: 'foo', quality: 1, sellIn: 1})
+            expect(updateItem({name: 'foo', quality: 2, sellIn: 2})).to.deep.equal({name: 'foo', quality: 1, sellIn: 1})
         });
         it('reduces quality by 2 and sellIn by 1 when sellIn is negative', () => {
-            expect(updateRegularItem({name: 'foo', quality: 2, sellIn: 0})).to.deep.equal({name: 'foo', quality: 0, sellIn: -1})
+            expect(updateItem({name: 'foo', quality: 2, sellIn: 0})).to.deep.equal({name: 'foo', quality: 0, sellIn: -1})
         });
         it('does not reduce quality when 0', () => {
-            expect(updateRegularItem({name: 'foo', quality: 0, sellIn: 0})).to.deep.equal({name: 'foo', quality: 0, sellIn: -1})
+            expect(updateItem({name: 'foo', quality: 0, sellIn: 0})).to.deep.equal({name: 'foo', quality: 0, sellIn: -1})
         });
     });
     describe("legendary items", () => {

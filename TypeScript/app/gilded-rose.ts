@@ -22,7 +22,7 @@ const changeQuality = (delta: number) => (item: Item): Item => ({
 
 const zeroQuality = (item: Item): Item => ({...item, quality: 0});
 
-export const updateRegularItem = (item: Item): Item => decrementSellIn(
+const updateRegularItem = (item: Item): Item => decrementSellIn(
     (
         item.quality === 0 ? identity :
         item.sellIn <= 0 ? changeQuality(-2) :
@@ -30,14 +30,14 @@ export const updateRegularItem = (item: Item): Item => decrementSellIn(
     )(item)
 )
 
-export const updateAppreciatingItem = (item: Item): Item => decrementSellIn(
+const updateAppreciatingItem = (item: Item): Item => decrementSellIn(
     (
         item.sellIn > 0 ? changeQuality(1):
         changeQuality(2)
     )(item)
 )
 
-export const updateConjuredItem = (item: Item): Item => decrementSellIn(
+const updateConjuredItem = (item: Item): Item => decrementSellIn(
     (
         item.quality === 0 ? identity :
         item.sellIn <= 0 ? changeQuality(-4) :
@@ -46,9 +46,9 @@ export const updateConjuredItem = (item: Item): Item => decrementSellIn(
 )
 
 // legendary items are unchanging
-export const updateLegendaryItem = identity
+const updateLegendaryItem = identity
 
-export const updateBackstagePassItem = (item: Item): Item =>
+const updateBackstagePassItem = (item: Item): Item =>
     decrementSellIn(
         (
             item.sellIn > 10 ? changeQuality(1) :
@@ -73,4 +73,5 @@ export const updateItem = (item: Item): Item => {
     }
 }
 
+// why test that .map works?
 export const updateQuality = (items: Item[]):Item[] => items.map(updateItem); 
